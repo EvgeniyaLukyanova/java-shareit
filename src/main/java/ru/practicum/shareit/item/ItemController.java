@@ -22,6 +22,7 @@ public class ItemController {
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
+
     @PostMapping
     public ItemDto create(@Valid @RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") int userId) {
         log.info("Начинаем добавлять вещь: {}", item);

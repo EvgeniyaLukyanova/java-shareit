@@ -67,11 +67,10 @@ public class ItemService {
     }
 
     public List<ItemDto> getAvailableItems(String text) {
-       if (text.isEmpty()) {
-           return new ArrayList<>();
-       }
-       else {
-           return itemStorage.getItems().stream()
+        if (text.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            return itemStorage.getItems().stream()
                    .filter(f -> f.getName().toLowerCase().contains(text.toLowerCase()) || f.getDescription().toLowerCase().contains(text.toLowerCase()))
                    .filter(f -> f.getAvailable().booleanValue())
                    .map(e -> itemMapper.toItemDto(e))
