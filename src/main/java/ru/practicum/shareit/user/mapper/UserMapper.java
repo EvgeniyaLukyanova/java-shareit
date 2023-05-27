@@ -15,11 +15,15 @@ public class UserMapper {
     }
 
     public static User toUser(UserDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        return user;
+        if (userDto != null) {
+            User user = new User();
+            user.setId(userDto.getId());
+            user.setName(userDto.getName());
+            user.setEmail(userDto.getEmail());
+            return user;
+        } else {
+            return null;
+        }
     }
 
     public static void updateUser(UserDto userDto, User user) {

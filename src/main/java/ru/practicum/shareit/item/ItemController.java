@@ -2,18 +2,17 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import javax.validation.Valid;
 import java.util.Collection;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @Slf4j
+//@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -24,6 +23,8 @@ public class ItemController {
     }
 
     @PostMapping
+    //@Validated(Create.class)
+    @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(@Valid @RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") int userId) {
         log.info("Начинаем добавлять вещь: {}", item);
         ItemDto itemDto = itemService.createItem(item, userId);
@@ -32,7 +33,9 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ItemDto patch(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader("X-Sharer-User-Id") int userId) {
+    //@Validated(Update.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ItemDto patch(/*@Valid*/ @RequestBody ItemDto item, @PathVariable int id, @RequestHeader("X-Sharer-User-Id") int userId) {
         log.info("Начинаем добавлять вещь: {}", item);
         ItemDto itemDto = itemService.partialUpdate(item, id, userId);
         log.info("Вещь добавлена: {}", item);

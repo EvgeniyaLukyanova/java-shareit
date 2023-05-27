@@ -2,18 +2,17 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 import javax.validation.Valid;
 import java.util.Collection;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @Slf4j
+//@Validated
 public class UserController {
 
     private final UserService userService;
@@ -24,6 +23,8 @@ public class UserController {
     }
 
     @PostMapping
+    //@Validated(Create.class)
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Valid @RequestBody UserDto user) {
         log.info("Начинаем добавлять пользователя: {}", user);
         userService.validate(user);
@@ -33,7 +34,9 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto patch(@RequestBody UserDto user, @PathVariable int id) {
+    //@Validated(Update.class)
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto patch(/*@Valid*/ @RequestBody UserDto user, @PathVariable int id) {
         log.info("Начинаем изменять пользователя: {}", user);
         userService.validate(user, id);
         UserDto userDto = userService.partialUpdate(user, id);
@@ -54,6 +57,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable int id) {
         log.info("Удаляем пользователя с ид {}", id);
         userService.delete(id);
