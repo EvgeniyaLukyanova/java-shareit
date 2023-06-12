@@ -3,63 +3,49 @@ package ru.practicum.shareit.user.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import static ru.practicum.shareit.user.mapper.UserMapper.*;
 
 @Service
 public class UserService {
-
-    private final UserStorage userStorage;
-    private final UserMapper userMapper;
+    private final UserRepository repository;
 
     @Autowired
-    public UserService(UserStorage userStorage, UserMapper userMapper) {
-        this.userStorage = userStorage;
-        this.userMapper = userMapper;
-    }
-
-    public void validate(UserDto user, int id) {
-        if (userStorage.getUsers().stream()
-                .filter(f -> f.getId() != id)
-                .map(e -> e.getEmail())
-                .collect(Collectors.toList())
-                .contains(user.getEmail())) {
-            throw new ValidationException("Пользователь с электронной почтой " + user.getEmail() + " уже существует.");
-        }
-    }
-
-    public void validate(UserDto user) {
-        validate(user, user.getId());
+    public UserService(UserRepository repository) {
+        this.repository = repository;
     }
 
     public UserDto createUser(UserDto user) {
-        return userMapper.toUserDto(userStorage.createUser(userMapper.toUser(user)));
+        return toUserDto(repository.save(toUser(user)));
     }
 
-    public UserDto partialUpdate(UserDto userDto, int id) {
-        User user = userStorage.getUserById(id);
-        userMapper.updateUser(userDto, user);
-        return userMapper.toUserDto(userStorage.updateUser(user));
-    }
-
-    public UserDto getUserById(int id) {
-        User user = userStorage.getUserById(id);
-        if (user == null) {
-            throw new NotFoundException(String.format("Пользователь с ид %s не найден", id));
+    public UserDto partialUpdate(UserDto userDto, Long id) {
+        Optional<User> userOptional = repository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            updateUser(userDto, user);
+            return toUserDto(repository.save(user));
+        } else {
+            return null;
         }
-        return userMapper.toUserDto(user);
+    }
+
+    public UserDto getUserById(long id) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с ид %s не найден", id)));
+        return toUserDto(user);
     }
 
     public List<UserDto> getUsers() {
-        return userStorage.getUsers().stream().map(e -> userMapper.toUserDto(e)).collect(Collectors.toList());
+        return repository.findAll().stream().map(e -> toUserDto(e)).collect(Collectors.toList());
     }
 
-    public void delete(int id) {
-        userStorage.deleteUserById(id);
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }

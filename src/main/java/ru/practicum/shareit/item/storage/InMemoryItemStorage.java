@@ -10,10 +10,10 @@ import java.util.Map;
 @Component
 public class InMemoryItemStorage implements ItemStorage {
 
-    private int uniqueId = 0;
-    public final Map<Integer, Item> items = new HashMap<>();
+    private Long uniqueId = Long.valueOf(0);
+    public final Map<Long, Item> items = new HashMap<>();
 
-    private int getUniqueId() {
+    private Long getUniqueId() {
         uniqueId++;
         return uniqueId;
     }
