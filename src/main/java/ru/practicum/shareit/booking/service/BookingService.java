@@ -38,7 +38,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с ид %s не найдена", bookingDto.getItemId())));
-        if (item.getOwner().getId() == user.getId()) {
+        if (item.getOwner().getId().equals(user.getId())) {
             throw new NotFoundException(String.format("Вещь с ид %s не найдена", bookingDto.getItemId()));
         }
         if (!item.getAvailable().booleanValue()) {
@@ -64,7 +64,7 @@ public class BookingService {
        if (userId == null) {
            throw new NotFoundException(String.format("Не задан владелец"));
        }
-       if (booking.getItem().getOwner().getId() != userId) {
+       if (!booking.getItem().getOwner().getId().equals(userId)) {
            throw new NotFoundException(String.format("Пользователь не владелец вещи"));
        }
        if (approved == null) {

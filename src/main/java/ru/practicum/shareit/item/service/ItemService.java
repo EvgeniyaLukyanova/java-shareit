@@ -51,7 +51,7 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         Item item = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Вещь с ид %s не найдена", id)));
-        if (item.getOwner().getId() != userId) {
+        if (!item.getOwner().getId().equals(userId)) {
             throw new NotFoundException(String.format("Пользовать с ид %s не может редактировать вещь \"%s\"", userId, itemDto.getName()));
         }
         updateItem(itemDto, item);
@@ -91,7 +91,7 @@ public class ItemService {
                 Booking nextBooking = mapNextBooking.get(item);
                 List<Comment> itemComments = new ArrayList<>();
                 for (Comment comment : comments) {
-                    if (comment.getItem().getId() == item.getId()) {
+                    if (comment.getItem().getId().equals(item.getId())) {
                         itemComments.add(comment);
                     }
                 }

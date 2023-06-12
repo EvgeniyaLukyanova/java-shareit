@@ -36,7 +36,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item getItemById(int id) {
+    public Item getItemById(Long id) {
         return items.get(id);
     }
 
