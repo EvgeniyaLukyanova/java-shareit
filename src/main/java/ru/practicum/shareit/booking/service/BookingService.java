@@ -8,7 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.reference.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.InvalidDatаException;
+import ru.practicum.shareit.exception.InvalidDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
@@ -96,7 +96,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         if (state != null) {
             if (!List.of("ALL","CURRENT","PAST","FUTURE", "WAITING", "APPROVED", "REJECTED").contains(state)) {
-                throw new InvalidDatаException(String.format("Unknown state: " + state));
+                throw new InvalidDataException(String.format("Unknown state: " + state));
             }
         }
         return repository.findByBookerAndState(userId, state).stream()
@@ -110,7 +110,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         if (state != null) {
             if (!List.of("ALL","CURRENT","PAST","FUTURE", "WAITING", "APPROVED", "REJECTED").contains(state)) {
-                throw new InvalidDatаException(String.format("Unknown state: " + state));
+                throw new InvalidDataException(String.format("Unknown state: " + state));
             }
         }
         return repository.findByBookerAndStateOwner(userId, state).stream()

@@ -9,8 +9,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByOwnerIdOrderById(Long id);
 
     @Query("select it " +
-            "from Item as it "+
-            "where (Lower(it.name) like '%'||Lower(?1)||'%' or Lower(it.description) like '%'||Lower(?1)||'%') "+
+            "from Item as it " +
+            "where (Lower(it.name) like '%'||Lower(?1)||'%' or Lower(it.description) like '%'||Lower(?1)||'%') " +
             "  and it.available = TRUE ")
     List<Item> findAvailableItemsByNameDescription(String text);
 }

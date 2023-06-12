@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.InvalidDatаException;
+import ru.practicum.shareit.exception.InvalidDataException;
 import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class BookingController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleInvalidDatа(final InvalidDatаException e) {
+    public Map<String, String> handleInvalidData(final InvalidDataException e) {
         return Map.of("error", e.getMessage());
     }
 }
