@@ -39,12 +39,14 @@ public class UserController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Collection<UserDto> findAll() {
         log.info("Получение списка всех пользователей");
         return userService.getUsers();
     }
 
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public UserDto getUserById(@PathVariable Long id) {
         log.info("Получение пользователя с ид {}", id);
         return userService.getUserById(id);

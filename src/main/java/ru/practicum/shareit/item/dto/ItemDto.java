@@ -4,6 +4,7 @@ import lombok.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -11,8 +12,10 @@ import javax.validation.constraints.NotNull;
 public class ItemDto {
     private Long id;
     @NotBlank
+    @Size(max = 255)
     private String name;
     @NotBlank
+    @Size(max = 1000)
     private String description;
     @NotNull
     private Boolean available;

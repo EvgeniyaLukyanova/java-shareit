@@ -25,7 +25,8 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@Valid @RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ItemDto create(@Valid @RequestBody ItemDto item,
+                          @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Начинаем добавлять вещь: {}", item);
         ItemDto itemDto = itemService.createItem(item, userId);
         log.info("Вещь добавлена: {}", item);
@@ -34,7 +35,8 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto patch(@RequestBody ItemDto item, @PathVariable Long id, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ItemDto patch(@RequestBody ItemDto item, @PathVariable Long id,
+                         @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Начинаем добавлять вещь: {}", item);
         ItemDto itemDto = itemService.partialUpdate(item, id, userId);
         log.info("Вещь добавлена: {}", item);
@@ -42,25 +44,32 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDtoResponse getItemById(@PathVariable Long id, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    @ResponseStatus(HttpStatus.OK)
+    public ItemDtoResponse getItemById(@PathVariable Long id,
+                                       @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получение вещи с ид {}", id);
         return itemService.getItemById(id, userId);
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Collection<ItemDtoResponse> findAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получение списка всех вещей пользователя с ид {}", userId);
         return itemService.getItems(userId);
     }
 
     @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
     public Collection<ItemDto> findAvailableItem(@RequestParam("text") String text) {
         log.info("Получение списка всех доступных для аренды вещей содержащих текст \"{}\" в названии или описании", text);
         return itemService.getAvailableItems(text);
     }
 
     @PostMapping("/{id}/comment")
-    public CommentDto createComment(@Valid @RequestBody CommentDto comment, @PathVariable Long id, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    @ResponseStatus(HttpStatus.OK)
+    public CommentDto createComment(@Valid @RequestBody CommentDto comment,
+                                    @PathVariable Long id,
+                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Начинаем добавлять комментарий: {}", comment);
         CommentDto commentDto = itemService.createComment(comment, id, userId);
         log.info("Комментарий добавлен: {}", comment);
