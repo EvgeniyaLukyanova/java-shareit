@@ -10,10 +10,10 @@ import java.util.Map;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private int uniqueId = 0;
-    public final Map<Integer, User> users = new HashMap<>();
+    private Long uniqueId = Long.valueOf(0);
+    public final Map<Long, User> users = new HashMap<>();
 
-    private int getUniqueId() {
+    private Long getUniqueId() {
         uniqueId++;
         return uniqueId;
     }
@@ -36,7 +36,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(Long id) {
         return users.get(id);
     }
 
@@ -46,7 +46,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUserById(int id) {
+    public void deleteUserById(Long id) {
         users.remove(id);
     }
 }
