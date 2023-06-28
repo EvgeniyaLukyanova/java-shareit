@@ -55,17 +55,21 @@ public class BookingController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Collection<BookingDtoResponse> getBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                      @RequestParam(required = false) String state) {
+                                                      @RequestParam(required = false) String state,
+                                                      @RequestParam(required = false) Integer from,
+                                                      @RequestParam(required = false) Integer size) {
         log.info("Получение списка бронирований со статусом {}", state);
-        return bookingService.getBookings(userId, state);
+        return bookingService.getBookings(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
     public Collection<BookingDtoResponse> getBookingsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                           @RequestParam(required = false) String state) {
+                                                           @RequestParam(required = false) String state,
+                                                           @RequestParam(required = false) Integer from,
+                                                           @RequestParam(required = false) Integer size) {
         log.info("Получение списка бронирований со статусом {}", state);
-        return bookingService.getBookingsOwner(userId, state);
+        return bookingService.getBookingsOwner(userId, state, from, size);
     }
 
     @ExceptionHandler

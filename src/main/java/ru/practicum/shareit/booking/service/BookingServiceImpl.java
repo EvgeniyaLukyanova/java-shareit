@@ -48,7 +48,7 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable().booleanValue()) {
             throw new ValidationException(String.format("Вещь с ид %s не доступна для бронирования", bookingDto.getItemId()));
         }
-        if (repository.findByStartDateBeforeEndDateAfter(bookingDto.getItemId(), bookingDto.getStart(), bookingDto.getStart()).size() > 0) {
+        if (repository.findByStartDateBeforeEndDateAfter(bookingDto.getItemId(), bookingDto.getStart(), bookingDto.getEnd()).size() > 0) {
             throw new ValidationException(String.format("Вещь с ид %s уже забронирована", bookingDto.getItemId()));
         }
         bookingDto.setStatus(BookingStatus.WAITING);
@@ -73,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
            throw new ValidationException(String.format("Запрос уже подтвержден"));
        }
        if (!approved.booleanValue() && booking.getStatus().equals(BookingStatus.REJECTED)) {
-           throw new ValidationException(String.format("Запрос уже подтвержден"));
+           throw new ValidationException(String.format("Запрос уже отклонен"));
        }
        if (approved.booleanValue()) {
            booking.setStatus(BookingStatus.APPROVED);
@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDtoResponse> getBookings(Long userId, String state) {
+    public List<BookingDtoResponse> getBookings(Long userId, String state, Integer from, Integer size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         if (state != null) {
@@ -101,14 +101,27 @@ public class BookingServiceImpl implements BookingService {
                 throw new InvalidDataException(String.format("Unknown state: " + state));
             }
         }
-        return repository.findByBookerAndState(userId, state).stream()
+        Long pageNo = null;
+        if (from != null || size != null) {
+            if (from == null || size == null) {
+                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
+            }
+            if (from < 0) {
+                throw new ValidationException(String.format("Не верное значение параметра from"));
+            }
+            if (size < 1) {
+                throw new ValidationException(String.format("Не верное значение параметра size"));
+            }
+            pageNo = Math.round(Math.ceil((from + 1) * 1.0 / size));
+        }
+        return repository.findByBookerAndState(userId, state, size, pageNo).stream()
                 .map(e -> BookingMapper.toBookingDtoResponse(e))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDtoResponse> getBookingsOwner(Long userId, String state) {
+    public List<BookingDtoResponse> getBookingsOwner(Long userId, String state, Integer from, Integer size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         if (state != null) {
@@ -116,7 +129,21 @@ public class BookingServiceImpl implements BookingService {
                 throw new InvalidDataException(String.format("Unknown state: " + state));
             }
         }
-        return repository.findByBookerAndStateOwner(userId, state).stream()
+        Long pageNo = null;
+        if (from != null || size != null) {
+            if (from == null || size == null) {
+                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
+            }
+            if (from < 0) {
+                throw new ValidationException(String.format("Не верное значение параметра from"));
+            }
+            if (size < 1) {
+                throw new ValidationException(String.format("Не верное значение параметра size"));
+            }
+            pageNo = Math.round(Math.ceil((from + 1) * 1.0 / size));
+        }
+
+        return repository.findByBookerAndStateOwner(userId, state, size, pageNo).stream()
                 .map(e -> BookingMapper.toBookingDtoResponse(e))
                 .collect(Collectors.toList());
     }

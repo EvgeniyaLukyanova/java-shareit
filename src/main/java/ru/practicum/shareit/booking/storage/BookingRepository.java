@@ -23,6 +23,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "where b.id = ?1 and (bk.id = ?2 or u.id = ?2)")
     Optional<Booking> findByIdAndBookerOwner(Long id, Long userId);
 
+    @Query("select b from Booking as b " +
+            "join b.item as i " +
+            "join b.booker as bk " +
+            "join i.owner as u " +
+            "where b.id = ?1 and (bk.id = ?2 or u.id = ?2)")
+    Booking findByIdAndBookerOwner1111(Long id, Long userId);
+
     @Query(value = "select b.* from bookings as b " +
                     "where b.booker_id = ?1 " +
                     "  and ((b.status = ?2) or " +
@@ -30,8 +37,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                     "       (?2 = 'CURRENT' and current_date+current_time between b.start_date and b.end_date) or " +
                     "       (?2 = 'PAST' and current_date+current_time > b.end_date) or " +
                     "       (?2 = 'FUTURE' and current_date+current_time < b.start_date))" +
-                    "order by b.start_date desc", nativeQuery = true)
-    List<Booking> findByBookerAndState(Long userId, String state);
+                    "order by b.start_date desc " +
+                    "limit ?3 offset ?3 * (?4 - 1) ", nativeQuery = true)
+    List<Booking> findByBookerAndState(Long userId, String state, Integer limit, Long pageNo);
 
     @Query(value = "select b.* from bookings as b " +
             "inner join items as i on (i.id = b.item_id) " +
@@ -41,8 +49,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "       (?2 = 'CURRENT' and current_date+current_time between b.start_date and b.end_date) or " +
             "       (?2 = 'PAST' and current_date+current_time > b.end_date) or " +
             "       (?2 = 'FUTURE' and current_date+current_time < b.start_date))" +
-            "order by b.start_date desc", nativeQuery = true)
-    List<Booking> findByBookerAndStateOwner(Long userId, String state);
+            "order by b.start_date desc " +
+            "limit ?3 offset ?3 * (?4 - 1) ", nativeQuery = true)
+    List<Booking> findByBookerAndStateOwner(Long userId, String state, Integer limit, Long pageNo);
 
     @Query("select b from Booking as b " +
             "join b.item as i " +
@@ -55,7 +64,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "                     join b.item as i " +
             "                     where i.id = ?1 " +
             "                       and b.startDate <= current_date+current_time " +
-            "                       and b.status <> 'REJECTED') ")
+            "                       and b.status <> 'REJECTED') "
+    )
     Booking findByLastBooker(Long itemId, Long userId);
 
     @Query("select b from Booking as b " +

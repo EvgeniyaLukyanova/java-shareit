@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -15,6 +17,8 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
+import ru.practicum.shareit.request.model.Request;
+import ru.practicum.shareit.request.storage.RequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -30,15 +34,19 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
+    private final RequestRepository requestRepository;
+
     @Autowired
     public ItemServiceImpl(ItemRepository repository,
                            UserRepository userRepository,
                            BookingRepository bookingRepository,
-                           CommentRepository commentRepository) {
+                           CommentRepository commentRepository,
+                           RequestRepository requestRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.requestRepository = requestRepository;
     }
 
     @Transactional
@@ -47,7 +55,13 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         item.setOwner(UserMapper.toUserDto(user));
-        return ItemMapper.toItemDto(repository.save(ItemMapper.toItem(item)));
+        if (item.getRequestId() != null) {
+            Request request = requestRepository.findById(item.getRequestId())
+                    .orElseThrow(() -> new NotFoundException(String.format("Запрос с ид %s не найден", item.getRequestId())));
+            return ItemMapper.toItemDto(repository.save(ItemMapper.toItemRequest(item, request)));
+        } else {
+            return ItemMapper.toItemDto(repository.save(ItemMapper.toItem(item)));
+        }
     }
 
     @Transactional
@@ -79,8 +93,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDtoResponse> getItems(Long userId) {
-        List<Item> items = repository.findByOwnerIdOrderById(userId);
+    public List<ItemDtoResponse> getItems(Long userId, Integer from, Integer size) {
+        List<Item> items = new ArrayList<>();
+        if (from != null || size != null) {
+            if (from == null || size == null) {
+                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
+            }
+            if (from < 0) {
+                throw new ValidationException(String.format("Не верное значение параметра from"));
+            }
+            if (size < 1) {
+                throw new ValidationException(String.format("Не верное значение параметра size"));
+            }
+            PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").descending());
+            items = repository.findByOwnerId(userId, page).stream().collect(Collectors.toList());
+        } else {
+            items = repository.findByOwnerIdOrderById(userId);
+        }
         List<ItemDtoResponse> itemDtoResponses = new ArrayList<>();
         if (items.size() != 0) {
             List<Booking> lastBookings = bookingRepository.findByListLastBooker(userId);
@@ -111,14 +140,31 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getAvailableItems(String text) {
+    public List<ItemDto> getAvailableItems(String text, Integer from, Integer size) {
+        Long pageNo = null;
         if (text.isEmpty()) {
             return new ArrayList<>();
         } else {
-            return repository.findAvailableItemsByNameDescription(text).stream()
-                    .map(e -> ItemMapper.toItemDto(e))
-                    .collect(Collectors.toList());
-       }
+            if (from != null || size != null) {
+                if (from == null || size == null) {
+                    throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
+                }
+                if (from < 0) {
+                    throw new ValidationException(String.format("Не верное значение параметра from"));
+                }
+                if (size < 1) {
+                    throw new ValidationException(String.format("Не верное значение параметра size"));
+                }
+                PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").descending());
+                return repository.findAvailableItemsByNameDescription(text, page).stream()
+                        .map(e -> ItemMapper.toItemDto(e))
+                        .collect(Collectors.toList());
+            } else {
+                return repository.findAvailableItemsByNameDescription(text).stream()
+                        .map(e -> ItemMapper.toItemDto(e))
+                        .collect(Collectors.toList());
+            }
+        }
     }
 
     @Transactional

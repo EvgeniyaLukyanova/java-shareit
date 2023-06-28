@@ -53,16 +53,20 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemDtoResponse> findAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<ItemDtoResponse> findAll(@RequestParam(required = false) Integer from,
+                                               @RequestParam(required = false) Integer size,
+                                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получение списка всех вещей пользователя с ид {}", userId);
-        return itemService.getItems(userId);
+        return itemService.getItems(userId, from, size);
     }
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemDto> findAvailableItem(@RequestParam("text") String text) {
+    public Collection<ItemDto> findAvailableItem(@RequestParam("text") String text,
+                                                 @RequestParam(required = false) Integer from,
+                                                 @RequestParam(required = false) Integer size) {
         log.info("Получение списка всех доступных для аренды вещей содержащих текст \"{}\" в названии или описании", text);
-        return itemService.getAvailableItems(text);
+        return itemService.getAvailableItems(text, from, size);
     }
 
     @PostMapping("/{id}/comment")
