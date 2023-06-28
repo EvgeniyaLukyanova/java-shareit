@@ -269,7 +269,7 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        when(repository.findByBookerAndState(userId, state, size, null)).thenReturn(List.of(booking));
+        when(repository.findByBookerAndState(userId, state)).thenReturn(List.of(booking));
 
         List<BookingDtoResponse> resultBookingDto = bookingService.getBookings(userId, state, from, size);
         assertEquals(1, resultBookingDto.size());
@@ -353,7 +353,7 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        when(repository.findByBookerAndStateOwner(userId, state, size, null)).thenReturn(List.of(booking));
+        when(repository.findByBookerAndStateOwner(userId, state)).thenReturn(List.of(booking));
 
         List<BookingDtoResponse> resultBookingDto = bookingService.getBookingsOwner(userId, state, from, size);
         assertEquals(1, resultBookingDto.size());

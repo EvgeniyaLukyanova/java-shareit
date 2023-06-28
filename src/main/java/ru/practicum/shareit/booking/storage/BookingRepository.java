@@ -42,6 +42,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByBookerAndState(Long userId, String state, Integer limit, Long pageNo);
 
     @Query(value = "select b.* from bookings as b " +
+            "where b.booker_id = ?1 " +
+            "  and ((b.status = ?2) or " +
+            "       (COALESCE(?2,'ALL') = 'ALL') or" +
+            "       (?2 = 'CURRENT' and current_date+current_time between b.start_date and b.end_date) or " +
+            "       (?2 = 'PAST' and current_date+current_time > b.end_date) or " +
+            "       (?2 = 'FUTURE' and current_date+current_time < b.start_date))" +
+            "order by b.start_date desc ", nativeQuery = true)
+    List<Booking> findByBookerAndState(Long userId, String state);
+
+    @Query(value = "select b.* from bookings as b " +
             "inner join items as i on (i.id = b.item_id) " +
             "where i.user_id = ?1 " +
             "  and ((b.status = ?2) or " +
@@ -52,6 +62,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "order by b.start_date desc " +
             "limit ?3 offset ?3 * (?4 - 1) ", nativeQuery = true)
     List<Booking> findByBookerAndStateOwner(Long userId, String state, Integer limit, Long pageNo);
+
+    @Query(value = "select b.* from bookings as b " +
+            "inner join items as i on (i.id = b.item_id) " +
+            "where i.user_id = ?1 " +
+            "  and ((b.status = ?2) or " +
+            "       (COALESCE(?2,'ALL') = 'ALL') or" +
+            "       (?2 = 'CURRENT' and current_date+current_time between b.start_date and b.end_date) or " +
+            "       (?2 = 'PAST' and current_date+current_time > b.end_date) or " +
+            "       (?2 = 'FUTURE' and current_date+current_time < b.start_date))" +
+            "order by b.start_date desc ", nativeQuery = true)
+    List<Booking> findByBookerAndStateOwner(Long userId, String state);
 
     @Query("select b from Booking as b " +
             "join b.item as i " +

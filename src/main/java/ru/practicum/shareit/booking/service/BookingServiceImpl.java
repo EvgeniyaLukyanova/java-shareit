@@ -113,10 +113,14 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException(String.format("Не верное значение параметра size"));
             }
             pageNo = Math.round(Math.ceil((from + 1) * 1.0 / size));
+            return repository.findByBookerAndState(userId, state, size, pageNo).stream()
+                    .map(e -> BookingMapper.toBookingDtoResponse(e))
+                    .collect(Collectors.toList());
+        } else {
+            return repository.findByBookerAndState(userId, state).stream()
+                    .map(e -> BookingMapper.toBookingDtoResponse(e))
+                    .collect(Collectors.toList());
         }
-        return repository.findByBookerAndState(userId, state, size, pageNo).stream()
-                .map(e -> BookingMapper.toBookingDtoResponse(e))
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -141,10 +145,13 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException(String.format("Не верное значение параметра size"));
             }
             pageNo = Math.round(Math.ceil((from + 1) * 1.0 / size));
+            return repository.findByBookerAndStateOwner(userId, state, size, pageNo).stream()
+                    .map(e -> BookingMapper.toBookingDtoResponse(e))
+                    .collect(Collectors.toList());
+        } else {
+            return repository.findByBookerAndStateOwner(userId, state).stream()
+                    .map(e -> BookingMapper.toBookingDtoResponse(e))
+                    .collect(Collectors.toList());
         }
-
-        return repository.findByBookerAndStateOwner(userId, state, size, pageNo).stream()
-                .map(e -> BookingMapper.toBookingDtoResponse(e))
-                .collect(Collectors.toList());
     }
 }
