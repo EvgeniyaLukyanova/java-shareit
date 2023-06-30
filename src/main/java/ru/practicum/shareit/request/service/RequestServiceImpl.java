@@ -1,14 +1,13 @@
 package ru.practicum.shareit.request.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.pageable.FromSizePageable;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.dto.RequestDtoResponse;
 import ru.practicum.shareit.request.mapper.RequestMapper;
@@ -83,17 +82,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestDtoResponse> getAllRequests(Integer from, Integer size, Long userId) {
         List<Request> requests = new ArrayList<>();
-        if (from != null || size != null) {
-            if (from == null || size == null) {
-                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
-            }
-            if (from < 0) {
-                throw new ValidationException(String.format("Не верное значение параметра from"));
-            }
-            if (size < 1) {
-                throw new ValidationException(String.format("Не верное значение параметра size"));
-            }
-            PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("created").descending());
+        if (from != null & size != null) {
+            FromSizePageable page = FromSizePageable.of(from, size, Sort.by("created").descending());
             requests = repository.findAllByRequestorIdNot(userId, page).stream().collect(Collectors.toList());
         } else {
             requests = repository.findAllByRequestorIdNotOrderByCreatedDesc(userId);

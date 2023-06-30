@@ -9,7 +9,10 @@ import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.dto.RequestDtoResponse;
 import ru.practicum.shareit.request.service.RequestService;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
+
+import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
 
 @RestController
 @RequestMapping("/requests")
@@ -26,7 +29,7 @@ public class RequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RequestDto create(@Valid @RequestBody RequestDto request,
-                             @RequestHeader("X-Sharer-User-Id") Long userId) {
+                             @RequestHeader(requestHeaderForUser) Long userId) {
         log.info("Начинаем добавлять запрос: {}", request);
         RequestDto requestDto = requestService.createRequest(request, userId);
         log.info("Запрос добавлена: {}", request);
@@ -35,16 +38,16 @@ public class RequestController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<RequestDtoResponse> findRequestsUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<RequestDtoResponse> findRequestsUser(@RequestHeader(requestHeaderForUser) Long userId) {
         log.info("Получение списка всех запросов пользователя с ид {}", userId);
         return requestService.getRequests(userId);
     }
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<RequestDtoResponse> findAllRequests(@RequestParam(required = false) Integer from,
-                                                          @RequestParam(required = false) Integer size,
-                                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<RequestDtoResponse> findAllRequests(@RequestParam(required = false) @Min(0) Integer from,
+                                                          @RequestParam(required = false) @Min(1) Integer size,
+                                                          @RequestHeader(requestHeaderForUser) Long userId) {
         log.info("Получение списка запросов, созданных другими пользователями");
         return requestService.getAllRequests(from, size, userId);
     }
@@ -52,7 +55,7 @@ public class RequestController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RequestDtoResponse getItemById(@PathVariable Long id,
-                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                          @RequestHeader(requestHeaderForUser) Long userId) {
         log.info("Получение запроса с ид {}", id);
         return requestService.getRequestById(id, userId);
     }

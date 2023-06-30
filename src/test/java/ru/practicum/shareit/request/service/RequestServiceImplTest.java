@@ -7,11 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.pageable.FromSizePageable;
 import ru.practicum.shareit.request.dto.RequestDto;
 import ru.practicum.shareit.request.dto.RequestDtoResponse;
 import ru.practicum.shareit.request.mapper.RequestMapper;
@@ -24,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,12 +125,12 @@ class RequestServiceImplTest {
     }
 
     @Test
-    void getAllRequests_fromSizeNotEmpty() {
+    void getAllRequestsFromSizeNotEmpty() {
         Long userId = 1L;
         Integer from = 0;
         Integer size = 1;
 
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("created").descending());
+        FromSizePageable page = FromSizePageable.of(from, size, Sort.by("created").descending());
         Page<Request> pg = new PageImpl<>(List.of(request));
         when(repository.findAllByRequestorIdNot(userId, page)).thenReturn(pg);
 
@@ -144,36 +142,6 @@ class RequestServiceImplTest {
         assertEquals(request.getDescription(), requestDtoResponses.get(0).getDescription());
         assertEquals(1, requestDtoResponses.get(0).getItems().size());
         assertEquals(item.getName(), requestDtoResponses.get(0).getItems().get(0).getName());
-    }
-
-    @Test
-    void getAllRequests_SizeEmpty() {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = null;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> requestService.getAllRequests(from, size, userId));
-        assertEquals("Должны быть заполненны оба параметра: from, size", exception.getMessage());
-    }
-
-    @Test
-    void getAllRequests_fromLessThanZero() {
-        Long userId = 1L;
-        Integer from = -1;
-        Integer size = 1;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> requestService.getAllRequests(from, size, userId));
-        assertEquals("Не верное значение параметра from", exception.getMessage());
-    }
-
-    @Test
-    void getAllRequests_fromLessThanOne() {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = 0;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> requestService.getAllRequests(from, size, userId));
-        assertEquals("Не верное значение параметра size", exception.getMessage());
     }
 
     @Test

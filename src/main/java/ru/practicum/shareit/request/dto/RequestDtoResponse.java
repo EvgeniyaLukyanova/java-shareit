@@ -10,6 +10,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.shareit.constants.Constants.dateFormat;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +20,7 @@ public class RequestDtoResponse {
     @NotBlank
     @Size(max = 1000)
     private String description;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDateTime created;
     private List<ItemDto> items;
 }

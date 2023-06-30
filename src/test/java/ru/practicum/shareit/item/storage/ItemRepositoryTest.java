@@ -22,7 +22,7 @@ class ItemRepositoryTest {
     ItemRepository itemRepository;
 
     @Test
-    void findAvailableItemsByNameDescription_page() {
+    void findAvailableItemsByNameDescriptionPage() {
         Integer from = 0;
         Integer size = 1;
 
@@ -62,7 +62,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    void findAvailableItemsByNameDescription_list() {
+    void findAvailableItemsByNameDescriptionList() {
         User user = new User();
         user.setEmail("user@user.com");
         user.setName("user");

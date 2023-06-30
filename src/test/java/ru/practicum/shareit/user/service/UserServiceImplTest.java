@@ -41,7 +41,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUser_empty() {
+    void createUserEmpty() {
         User user = null;
         UserDto userDto = UserMapper.toUserDto(user);
         UserDto resultUserDto = userService.createUser(userDto);
@@ -91,7 +91,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserById_whenUserFound() {
+    void getUserByIdWhenUserFound() {
         Long userId = 1L;
         User user = new User(userId, "user@user.com", "user");
         UserDto userDto = UserMapper.toUserDto(user);
@@ -103,7 +103,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserById_whenUserNotFound() {
+    void getUserByIdWhenUserNotFound() {
         Long userId = 1L;
         User user = new User(userId, "user@user.com", "user");
         UserDto userDto = UserMapper.toUserDto(user);

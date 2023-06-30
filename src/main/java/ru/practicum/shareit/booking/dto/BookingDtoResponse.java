@@ -9,14 +9,16 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import java.time.LocalDateTime;
 
+import static ru.practicum.shareit.constants.Constants.dateFormat;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDtoResponse {
     private Long id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDateTime start;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
     private LocalDateTime end;
     private ItemDto item;
     private UserDto booker;

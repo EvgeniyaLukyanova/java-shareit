@@ -27,6 +27,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.constants.Constants.dateFormat;
+import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -73,7 +75,7 @@ class RequestControllerTest {
         when(requestService.createRequest(any(), any())).thenReturn(requestDto);
 
         mvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(requestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,18 +86,18 @@ class RequestControllerTest {
                 .andExpect(jsonPath("$.requestor.id", is(userDto.getId()), Long.class))
                 .andExpect(jsonPath("$.requestor.email", is(userDto.getEmail())))
                 .andExpect(jsonPath("$.requestor.name", is(userDto.getName())))
-                .andExpect(jsonPath("$.created", is(requestDto.getCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))));
+                .andExpect(jsonPath("$.created", is(requestDto.getCreated().format(DateTimeFormatter.ofPattern(dateFormat)))));
     }
 
     @Test
-    void createRequest_descriptionNotBlank() throws Exception {
+    void createRequestDescriptionNotBlank() throws Exception {
         RequestDto requestDto = new RequestDto(1L,
                 " ",
                 userDto,
                 LocalDateTime.of(2023,6,18,10,0,0));
 
         mvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(requestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,14 +108,14 @@ class RequestControllerTest {
     }
 
     @Test
-    void createRequest_descriptionEmpty() throws Exception {
+    void createRequestDescriptionEmpty() throws Exception {
         RequestDto requestDto = new RequestDto(1L,
                 null,
                 userDto,
                 LocalDateTime.of(2023,6,18,10,0,0));
 
         mvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(requestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,7 +130,7 @@ class RequestControllerTest {
         when(requestService.getRequests(userDto.getId())).thenReturn(List.of(requestDtoResponse));
 
         mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", userDto.getId()))
+                        .header(requestHeaderForUser, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is(requestDtoResponse.getId()), Long.class))
                 .andExpect(jsonPath("$[0].description", is(requestDtoResponse.getDescription())))
@@ -136,7 +138,7 @@ class RequestControllerTest {
                 .andExpect(jsonPath("$[0].items[0].name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].items[0].description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$[0].items[0].available", is(itemDto.getAvailable())))
-                .andExpect(jsonPath("$[0].created", is(requestDtoResponse.getCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))));
+                .andExpect(jsonPath("$[0].created", is(requestDtoResponse.getCreated().format(DateTimeFormatter.ofPattern(dateFormat)))));
     }
 
     @Test
@@ -144,7 +146,7 @@ class RequestControllerTest {
         when(requestService.getAllRequests(any(), any(), any())).thenReturn(List.of(requestDtoResponse));
 
         mvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .param("from", "0")
                         .param("size", "1"))
                 .andExpect(status().isOk())
@@ -154,7 +156,7 @@ class RequestControllerTest {
                 .andExpect(jsonPath("$[0].items[0].name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].items[0].description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$[0].items[0].available", is(itemDto.getAvailable())))
-                .andExpect(jsonPath("$[0].created", is(requestDtoResponse.getCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))));
+                .andExpect(jsonPath("$[0].created", is(requestDtoResponse.getCreated().format(DateTimeFormatter.ofPattern(dateFormat)))));
     }
 
     @Test
@@ -162,7 +164,7 @@ class RequestControllerTest {
         when(requestService.getRequestById(any(), any())).thenReturn(requestDtoResponse);
 
         mvc.perform(get("/requests/1")
-                        .header("X-Sharer-User-Id", userDto.getId()))
+                        .header(requestHeaderForUser, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(requestDtoResponse.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(requestDtoResponse.getDescription())))
@@ -170,6 +172,6 @@ class RequestControllerTest {
                 .andExpect(jsonPath("$.items[0].name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.items[0].description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.items[0].available", is(itemDto.getAvailable())))
-                .andExpect(jsonPath("$.created", is(requestDtoResponse.getCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))));
+                .andExpect(jsonPath("$.created", is(requestDtoResponse.getCreated().format(DateTimeFormatter.ofPattern(dateFormat)))));
     }
 }

@@ -31,6 +31,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.constants.Constants.dateFormat;
+import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
 
 @ExtendWith(MockitoExtension.class)
 class BookingControllerTest {
@@ -84,15 +86,15 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
-                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
+                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
                 .andExpect(jsonPath("$.item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.item.description", is(itemDto.getDescription())))
@@ -111,7 +113,7 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +124,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void createBooking_endInPast() throws Exception {
+    void createBookingEndInPast() throws Exception {
         BookingDto bookingDto = new BookingDto(1L,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().minusDays(2),
@@ -131,7 +133,7 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -142,7 +144,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void createBooking_itemEmpty() throws Exception {
+    void createBookingItemEmpty() throws Exception {
         BookingDto bookingDto = new BookingDto(1L,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().minusDays(2),
@@ -151,7 +153,7 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -162,7 +164,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void createBooking_startEmpty() throws Exception {
+    void createBookingStartEmpty() throws Exception {
         BookingDto bookingDto = new BookingDto(1L,
                 null,
                 LocalDateTime.now().plusDays(2),
@@ -171,7 +173,7 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -182,7 +184,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void createBooking_endEmpty() throws Exception {
+    void createBookingEndEmpty() throws Exception {
         BookingDto bookingDto = new BookingDto(1L,
                 LocalDateTime.now().plusDays(1),
                 null,
@@ -191,7 +193,7 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -207,12 +209,12 @@ class BookingControllerTest {
         when(bookingService.requestApprovReject(any(), any(), any())).thenReturn(bookingDtoResponse);
 
         mvc.perform(patch("/bookings/1")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .param("approved", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
-                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
+                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
                 .andExpect(jsonPath("$.item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.item.description", is(itemDto.getDescription())))
@@ -226,11 +228,11 @@ class BookingControllerTest {
         when(bookingService.getBookingById(any(), any())).thenReturn(bookingDtoResponse);
 
         mvc.perform(get("/bookings/1")
-                        .header("X-Sharer-User-Id", userDto.getId()))
+                        .header(requestHeaderForUser, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
-                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
+                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
                 .andExpect(jsonPath("$.item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.item.description", is(itemDto.getDescription())))
@@ -244,15 +246,15 @@ class BookingControllerTest {
         when(bookingService.getBookings(any(), any(), any(), any())).thenReturn(List.of(bookingDtoResponse));
 
         mvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .param("state", "APPROVED")
                         .param("from", "0")
                         .param("size", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
-                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
+                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
                 .andExpect(jsonPath("$[0].item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].item.description", is(itemDto.getDescription())))
@@ -266,15 +268,15 @@ class BookingControllerTest {
         when(bookingService.getBookingsOwner(any(), any(), any(), any())).thenReturn(List.of(bookingDtoResponse));
 
         mvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .param("state", "APPROVED")
                         .param("from", "0")
                         .param("size", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
-                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
+                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
                 .andExpect(jsonPath("$[0].item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].item.description", is(itemDto.getDescription())))
@@ -284,11 +286,11 @@ class BookingControllerTest {
     }
 
     @Test
-    void getBookings_invalidDataException() throws Exception {
+    void getBookingsInvalidDataException() throws Exception {
         when(bookingService.getBookings(any(), any(), any(), any())).thenThrow(new InvalidDataException(String.format("Unknown state: APPROV")));
 
         mvc.perform(get("/bookings", 0, 1)
-                        .header("X-Sharer-User-Id", userDto.getId())
+                        .header(requestHeaderForUser, userDto.getId())
                         .param("state", "APPROV")
                         .param("from", "0")
                         .param("size", "1"))

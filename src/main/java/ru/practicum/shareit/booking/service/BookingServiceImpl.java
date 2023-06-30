@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.reference.BookingStatus;
+import ru.practicum.shareit.booking.reference.BookingStatusParameter;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.InvalidDataException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,21 +99,16 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         if (state != null) {
-            if (!List.of("ALL","CURRENT","PAST","FUTURE", "WAITING", "APPROVED", "REJECTED").contains(state)) {
+            HashSet<String> statusValues = new HashSet<String>();
+            for (BookingStatusParameter status : BookingStatusParameter.values()) {
+                statusValues.add(status.name());
+            }
+            if (!statusValues.contains(state)) {
                 throw new InvalidDataException(String.format("Unknown state: " + state));
             }
         }
         Long pageNo = null;
-        if (from != null || size != null) {
-            if (from == null || size == null) {
-                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
-            }
-            if (from < 0) {
-                throw new ValidationException(String.format("Не верное значение параметра from"));
-            }
-            if (size < 1) {
-                throw new ValidationException(String.format("Не верное значение параметра size"));
-            }
+        if (from != null & size != null) {
             pageNo = Math.round(Math.ceil((from + 1) * 1.0 / size));
             return repository.findByBookerAndState(userId, state, size, pageNo).stream()
                     .map(e -> BookingMapper.toBookingDtoResponse(e))
@@ -129,21 +126,16 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         if (state != null) {
-            if (!List.of("ALL","CURRENT","PAST","FUTURE", "WAITING", "APPROVED", "REJECTED").contains(state)) {
+            HashSet<String> statusValues = new HashSet<String>();
+            for (BookingStatusParameter status : BookingStatusParameter.values()) {
+                statusValues.add(status.name());
+            }
+            if (!statusValues.contains(state)) {
                 throw new InvalidDataException(String.format("Unknown state: " + state));
             }
         }
         Long pageNo = null;
-        if (from != null || size != null) {
-            if (from == null || size == null) {
-                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
-            }
-            if (from < 0) {
-                throw new ValidationException(String.format("Не верное значение параметра from"));
-            }
-            if (size < 1) {
-                throw new ValidationException(String.format("Не верное значение параметра size"));
-            }
+        if (from != null & size != null) {
             pageNo = Math.round(Math.ceil((from + 1) * 1.0 / size));
             return repository.findByBookerAndStateOwner(userId, state, size, pageNo).stream()
                     .map(e -> BookingMapper.toBookingDtoResponse(e))

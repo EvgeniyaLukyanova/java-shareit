@@ -93,10 +93,6 @@ public class ItemMapper {
             if (itemDto.getAvailable() != null) {
                 item.setAvailable(itemDto.getAvailable());
             }
-
-//            if (itemDto.getOwner() != null) {
-//                item.setOwner(UserMapper.toUser(itemDto.getOwner()));
-//            }
         }
     }
 }

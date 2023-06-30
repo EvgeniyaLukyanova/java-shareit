@@ -21,9 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
 @SpringBootTest
-//@SpringBootTest(
-//        properties = "db.name=test",
-//        webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class RequestServiceImplIntegrationTest {
     private final EntityManager em;
@@ -77,7 +74,7 @@ class RequestServiceImplIntegrationTest {
     }
 
     @Test
-    void getAllRequests_fromSizeEmpty() {
+    void getAllRequestsFromSizeEmpty() {
         User user = new User();
         user.setEmail("user@user.com");
         user.setName("user");

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
+import ru.practicum.shareit.pageable.FromSizePageable;
 import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.request.storage.RequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -95,17 +95,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDtoResponse> getItems(Long userId, Integer from, Integer size) {
         List<Item> items = new ArrayList<>();
-        if (from != null || size != null) {
-            if (from == null || size == null) {
-                throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
-            }
-            if (from < 0) {
-                throw new ValidationException(String.format("Не верное значение параметра from"));
-            }
-            if (size < 1) {
-                throw new ValidationException(String.format("Не верное значение параметра size"));
-            }
-            PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").descending());
+        if (from != null & size != null) {
+            FromSizePageable page = FromSizePageable.of(from, size, Sort.by("id").descending());
             items = repository.findByOwnerId(userId, page).stream().collect(Collectors.toList());
         } else {
             items = repository.findByOwnerIdOrderById(userId);
@@ -145,17 +136,8 @@ public class ItemServiceImpl implements ItemService {
         if (text.isEmpty()) {
             return new ArrayList<>();
         } else {
-            if (from != null || size != null) {
-                if (from == null || size == null) {
-                    throw new ValidationException(String.format("Должны быть заполненны оба параметра: from, size"));
-                }
-                if (from < 0) {
-                    throw new ValidationException(String.format("Не верное значение параметра from"));
-                }
-                if (size < 1) {
-                    throw new ValidationException(String.format("Не верное значение параметра size"));
-                }
-                PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").descending());
+            if (from != null & size != null) {
+                FromSizePageable page = FromSizePageable.of(from, size, Sort.by("id").descending());
                 return repository.findAvailableItemsByNameDescription(text, page).stream()
                         .map(e -> ItemMapper.toItemDto(e))
                         .collect(Collectors.toList());

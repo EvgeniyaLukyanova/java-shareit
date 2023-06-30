@@ -6,13 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.reference.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
@@ -22,6 +20,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.pageable.FromSizePageable;
 import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.request.storage.RequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -241,7 +240,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItems_fromSizeNotEmpty() {
+    void getItemsFromSizeNotEmpty() {
         Long userId = 1L;
 
         Long itemId = 1L;
@@ -255,7 +254,7 @@ class ItemServiceImplTest {
         item.setAvailable(true);
         item.setOwner(user);
 
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").descending());
+        FromSizePageable page = FromSizePageable.of(from, size, Sort.by("id").descending());
         Page<Item> pg = new PageImpl<>(List.of(item));
         when(repository.findByOwnerId(userId, page)).thenReturn(pg);
 
@@ -265,36 +264,6 @@ class ItemServiceImplTest {
         assertNull(itemDtoResponse.get(0).getLastBooking());
         assertNull(itemDtoResponse.get(0).getNextBooking());
         assertEquals(0, itemDtoResponse.get(0).getComments().size());
-    }
-
-    @Test
-    void getItems_SizeEmpty() {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = null;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> itemService.getItems(userId, from, size));
-        assertEquals("Должны быть заполненны оба параметра: from, size", exception.getMessage());
-    }
-
-    @Test
-    void getItems_fromLessThanZero() {
-        Long userId = 1L;
-        Integer from = -1;
-        Integer size = 1;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> itemService.getItems(userId, from, size));
-        assertEquals("Не верное значение параметра from", exception.getMessage());
-    }
-
-    @Test
-    void getItems_fromLessThanOne() {
-        Long userId = 1L;
-        Integer from = 0;
-        Integer size = 0;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> itemService.getItems(userId, from, size));
-        assertEquals("Не верное значение параметра size", exception.getMessage());
     }
 
     @Test
@@ -320,7 +289,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getAvailableItems_fromSizeNotEmpty() {
+    void getAvailableItemsFromSizeNotEmpty() {
         String text = "дРелЬ";
         Integer from = 0;
         Integer size = 1;
@@ -333,7 +302,7 @@ class ItemServiceImplTest {
         item.setAvailable(true);
         item.setOwner(user);
 
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id").descending());
+        FromSizePageable page = FromSizePageable.of(from, size, Sort.by("id").descending());
         Page<Item> pg = new PageImpl<>(List.of(item));
         when(repository.findAvailableItemsByNameDescription(text, page)).thenReturn(pg);
 
@@ -341,36 +310,6 @@ class ItemServiceImplTest {
 
         assertEquals(1, itemDtoResponse.size());
         assertEquals(itemId, itemDtoResponse.get(0).getId());
-    }
-
-    @Test
-    void getAvailableItems_SizeEmpty() {
-        String text = "дРелЬ";
-        Integer from = 0;
-        Integer size = null;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> itemService.getAvailableItems(text, from, size));
-        assertEquals("Должны быть заполненны оба параметра: from, size", exception.getMessage());
-    }
-
-    @Test
-    void getAvailableItems_fromLessThanZero() {
-        String text = "дРелЬ";
-        Integer from = -1;
-        Integer size = 1;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> itemService.getAvailableItems(text, from, size));
-        assertEquals("Не верное значение параметра from", exception.getMessage());
-    }
-
-    @Test
-    void getAvailableItems_fromLessThanOne() {
-        String text = "дРелЬ";
-        Integer from = 0;
-        Integer size = 0;
-
-        Throwable exception = assertThrows(ValidationException.class, () -> itemService.getAvailableItems(text, from, size));
-        assertEquals("Не верное значение параметра size", exception.getMessage());
     }
 
     @Test

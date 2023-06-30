@@ -102,7 +102,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBooking_existBooking() {
+    void createBookingExistBooking() {
         Long userId = 1L;
         Long itemId = 1L;
 
@@ -127,7 +127,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBooking_availableFalse() {
+    void createBookingAvailableFalse() {
         Long userId = 1L;
         Long itemId = 1L;
 
@@ -151,7 +151,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createBooking_ownerItem() {
+    void createBookingOwnerItem() {
         Long userId = 1L;
         Long itemId = 1L;
 
@@ -191,7 +191,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void requestApprovReject_noOwner() {
+    void requestApprovRejectNoOwner() {
         Long userId = 1L;
         Long bookingId = 1L;
 
@@ -202,7 +202,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void requestApprovReject_approvedEmpty() {
+    void requestApprovRejectApprovedEmpty() {
         Long userId = 1L;
         Long bookingId = 1L;
 
@@ -213,7 +213,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void requestApprovReject_bookingApproved() {
+    void requestApprovRejectBookingApproved() {
         Long userId = 1L;
         Long bookingId = 1L;
         booking.setStatus(BookingStatus.APPROVED);
@@ -225,7 +225,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void requestApprovReject_bookingRejected() {
+    void requestApprovRejectBookingRejected() {
         Long userId = 1L;
         Long bookingId = 1L;
         booking.setStatus(BookingStatus.REJECTED);
@@ -237,7 +237,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void requestApprovReject_reject() {
+    void requestApprovRejectReject() {
         Long userId = 1L;
         Long bookingId = 1L;
 
@@ -251,7 +251,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void requestApprovReject_userEmpty() {
+    void requestApprovRejectUserEmpty() {
         Long bookingId = 1L;
 
         when(repository.findById(bookingId)).thenReturn(Optional.of(booking));
@@ -277,7 +277,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookings_errorState() {
+    void getBookingsErrorState() {
         Long userId = 1L;
         String state = "FFF";
         Integer from = null;
@@ -290,7 +290,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookings_fromSizeNotEmpty() {
+    void getBookingsFromSizeNotEmpty() {
         Long userId = 1L;
         String state = "ALL";
         Integer from = 0;
@@ -303,45 +303,6 @@ class BookingServiceImplTest {
         List<BookingDtoResponse> resultBookingDto = bookingService.getBookings(userId, state, from, size);
         assertEquals(1, resultBookingDto.size());
         assertEquals(1, resultBookingDto.get(0).getId());
-    }
-
-    @Test
-    void getBookings_SizeEmpty() {
-        Long userId = 1L;
-        String state = "ALL";
-        Integer from = 0;
-        Integer size = null;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        Throwable exception = assertThrows(ValidationException.class, () -> bookingService.getBookings(userId, state, from, size));
-        assertEquals("Должны быть заполненны оба параметра: from, size", exception.getMessage());
-    }
-
-    @Test
-    void getBookings_fromLessThanZero() {
-        Long userId = 1L;
-        String state = "ALL";
-        Integer from = -1;
-        Integer size = 1;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        Throwable exception = assertThrows(ValidationException.class, () -> bookingService.getBookings(userId, state, from, size));
-        assertEquals("Не верное значение параметра from", exception.getMessage());
-    }
-
-    @Test
-    void getBookings_fromLessThanOne() {
-        Long userId = 1L;
-        String state = "ALL";
-        Integer from = 0;
-        Integer size = 0;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        Throwable exception = assertThrows(ValidationException.class, () -> bookingService.getBookings(userId, state, from, size));
-        assertEquals("Не верное значение параметра size", exception.getMessage());
     }
 
     @Test
@@ -361,7 +322,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsOwner_errorState() {
+    void getBookingsOwnerErrorState() {
         Long userId = 1L;
         String state = "FFF";
         Integer from = null;
@@ -374,7 +335,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsOwner_fromSizeNotEmpty() {
+    void getBookingsOwnerFromSizeNotEmpty() {
         Long userId = 1L;
         String state = "ALL";
         Integer from = 0;
@@ -387,45 +348,6 @@ class BookingServiceImplTest {
         List<BookingDtoResponse> resultBookingDto = bookingService.getBookingsOwner(userId, state, from, size);
         assertEquals(1, resultBookingDto.size());
         assertEquals(1, resultBookingDto.get(0).getId());
-    }
-
-    @Test
-    void getBookingsOwner_SizeEmpty() {
-        Long userId = 1L;
-        String state = "ALL";
-        Integer from = 0;
-        Integer size = null;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        Throwable exception = assertThrows(ValidationException.class, () -> bookingService.getBookingsOwner(userId, state, from, size));
-        assertEquals("Должны быть заполненны оба параметра: from, size", exception.getMessage());
-    }
-
-    @Test
-    void getBookingsOwner_fromLessThanZero() {
-        Long userId = 1L;
-        String state = "ALL";
-        Integer from = -1;
-        Integer size = 1;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        Throwable exception = assertThrows(ValidationException.class, () -> bookingService.getBookingsOwner(userId, state, from, size));
-        assertEquals("Не верное значение параметра from", exception.getMessage());
-    }
-
-    @Test
-    void getBookingsOwner_fromLessThanOne() {
-        Long userId = 1L;
-        String state = "ALL";
-        Integer from = 0;
-        Integer size = 0;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        Throwable exception = assertThrows(ValidationException.class, () -> bookingService.getBookingsOwner(userId, state, from, size));
-        assertEquals("Не верное значение параметра size", exception.getMessage());
     }
 
     @Test
