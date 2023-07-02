@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 import java.util.stream.Collectors;
+import ru.practicum.shareit.request.model.Request;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
 @UtilityClass
@@ -20,6 +21,9 @@ public class ItemMapper {
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
         itemDto.setOwner(UserMapper.toUserDto(item.getOwner()));
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
     }
 
@@ -41,6 +45,9 @@ public class ItemMapper {
         if (comments != null) {
             itemDto.setComments(comments.stream().map(e -> CommentMapper.toCommentDto(e)).collect(Collectors.toList()));
         }
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getId());
+        }
         return itemDto;
     }
 
@@ -52,6 +59,21 @@ public class ItemMapper {
             item.setDescription(itemDto.getDescription());
             item.setAvailable(itemDto.getAvailable());
             item.setOwner(UserMapper.toUser(itemDto.getOwner()));
+            return item;
+        } else {
+            return null;
+        }
+    }
+
+    public Item toItemRequest(ItemDto itemDto, Request request) {
+        if (itemDto != null) {
+            Item item = new Item();
+            item.setId(itemDto.getId());
+            item.setName(itemDto.getName());
+            item.setDescription(itemDto.getDescription());
+            item.setAvailable(itemDto.getAvailable());
+            item.setOwner(UserMapper.toUser(itemDto.getOwner()));
+            item.setRequest(request);
             return item;
         } else {
             return null;
@@ -70,10 +92,6 @@ public class ItemMapper {
 
             if (itemDto.getAvailable() != null) {
                 item.setAvailable(itemDto.getAvailable());
-            }
-
-            if (itemDto.getOwner() != null) {
-                item.setOwner(UserMapper.toUser(itemDto.getOwner()));
             }
         }
     }
