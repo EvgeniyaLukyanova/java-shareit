@@ -10,7 +10,7 @@ import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.service.ItemService;
 import java.util.Collection;
 
-import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
+import static ru.practicum.shareit.constants.Constants.REQUEST_HEADER_FOR_USER;
 
 @RestController
 @RequestMapping("/items")
@@ -26,8 +26,8 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestBody ItemDto item,
-                          @RequestHeader(requestHeaderForUser) Long userId) {
+    public ItemDto createItem(@RequestBody ItemDto item,
+                              @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Начинаем добавлять вещь: {}", item);
         ItemDto itemDto = itemService.createItem(item, userId);
         log.info("Вещь добавлена: {}", item);
@@ -36,10 +36,10 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto patch(@RequestBody ItemDto item, @PathVariable Long id,
-                         @RequestHeader(requestHeaderForUser) Long userId) {
+    public ItemDto updateItem(@RequestBody ItemDto item, @PathVariable Long id,
+                              @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Начинаем добавлять вещь: {}", item);
-        ItemDto itemDto = itemService.partialUpdate(item, id, userId);
+        ItemDto itemDto = itemService.updateItem(item, id, userId);
         log.info("Вещь добавлена: {}", item);
         return itemDto;
     }
@@ -47,23 +47,23 @@ public class ItemController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ItemDtoResponse getItemById(@PathVariable Long id,
-                                       @RequestHeader(requestHeaderForUser) Long userId) {
+                                       @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Получение вещи с ид {}", id);
         return itemService.getItemById(id, userId);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemDtoResponse> findAll(@RequestParam(required = false) Integer from,
-                                               @RequestParam(required = false) Integer size,
-                                               @RequestHeader(requestHeaderForUser) Long userId) {
+    public Collection<ItemDtoResponse> getItems(@RequestParam(required = false) Integer from,
+                                                @RequestParam(required = false) Integer size,
+                                                @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Получение списка всех вещей пользователя с ид {}", userId);
         return itemService.getItems(userId, from, size);
     }
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<ItemDto> findAvailableItem(@RequestParam("text") String text,
+    public Collection<ItemDto> getAvailableItems(@RequestParam("text") String text,
                                                  @RequestParam(required = false) Integer from,
                                                  @RequestParam(required = false) Integer size) {
         log.info("Получение списка всех доступных для аренды вещей содержащих текст \"{}\" в названии или описании", text);
@@ -74,7 +74,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public CommentDto createComment(@RequestBody CommentDto comment,
                                     @PathVariable Long id,
-                                    @RequestHeader(requestHeaderForUser) Long userId) {
+                                    @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Начинаем добавлять комментарий: {}", comment);
         CommentDto commentDto = itemService.createComment(comment, id, userId);
         log.info("Комментарий добавлен: {}", comment);

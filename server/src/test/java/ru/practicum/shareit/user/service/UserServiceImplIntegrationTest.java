@@ -39,7 +39,7 @@ class UserServiceImplIntegrationTest {
         UserDto userDto = new UserDto();
         userDto.setName("updateUser");
 
-        UserDto userDtoResponse =  service.partialUpdate(userDto, user.getId());
+        UserDto userDtoResponse =  service.updateUser(userDto, user.getId());
 
         assertEquals(userDtoResponse.getName(), userDto.getName());
         assertEquals(userDtoResponse.getEmail(), user.getEmail());

@@ -61,7 +61,7 @@ class UserServiceImplTest {
 
         when(repository.findById(userId)).thenReturn(Optional.of(user));
 
-        UserDto resultUserDto = userService.partialUpdate(updateUserDto, userId);
+        UserDto resultUserDto = userService.updateUser(updateUserDto, userId);
 
         assertEquals(userId, resultUserDto.getId());
         assertEquals("updateName@user.com", resultUserDto.getEmail());

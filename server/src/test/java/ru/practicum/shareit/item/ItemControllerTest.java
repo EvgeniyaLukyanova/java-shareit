@@ -30,8 +30,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.practicum.shareit.constants.Constants.dateFormat;
-import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
+import static ru.practicum.shareit.constants.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemControllerTest {
@@ -68,7 +67,7 @@ class ItemControllerTest {
         when(itemService.createItem(itemDto, userDto.getId())).thenReturn(itemDto);
 
         mvc.perform(post("/items")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,10 +92,10 @@ class ItemControllerTest {
         ItemDto newItemDto = itemDto;
         newItemDto.setAvailable(false);
 
-        when(itemService.partialUpdate(any(), any(), any())).thenReturn(newItemDto);
+        when(itemService.updateItem(any(), any(), any())).thenReturn(newItemDto);
 
         mvc.perform(patch("/items/1")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .content(mapper.writeValueAsString(updateItemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -155,7 +154,7 @@ class ItemControllerTest {
         when(itemService.getItemById(any(), any())).thenReturn(itemDtoResponse);
 
         mvc.perform(get("/items/1")
-                        .header(requestHeaderForUser, userDto.getId()))
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemDtoResponse.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDtoResponse.getName())))
@@ -176,7 +175,7 @@ class ItemControllerTest {
         when(itemService.getItems(any(), any(), any())).thenReturn(List.of(itemDtoResponse));
 
         mvc.perform(get("/items", 0, 1)
-                        .header(requestHeaderForUser, userDto.getId()))
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(itemDtoResponse.getId()), Long.class))
@@ -200,7 +199,7 @@ class ItemControllerTest {
                         .param("text", "дРелЬ")
                         .param("from", "0")
                         .param("size", "1")
-                        .header(requestHeaderForUser, userDto.getId()))
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
@@ -226,7 +225,7 @@ class ItemControllerTest {
         when(itemService.createComment(any(), any(), any())).thenReturn(commentDto);
 
         mvc.perform(post("/items/1/comment")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .content(mapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -236,6 +235,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.text", is(commentDto.getText())))
                 .andExpect(jsonPath("$.item.id", is(commentDto.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
-                .andExpect(jsonPath("$.created", is(commentDto.getCreated().format(DateTimeFormatter.ofPattern(dateFormat)))));
+                .andExpect(jsonPath("$.created", is(commentDto.getCreated().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))));
     }
 }

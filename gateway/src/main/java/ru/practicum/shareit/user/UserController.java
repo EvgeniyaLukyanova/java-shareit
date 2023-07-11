@@ -24,15 +24,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> userItem(@RequestBody @Valid UserItemRequestDto user) {
+    public ResponseEntity<Object> createUser(@RequestBody @Valid UserItemRequestDto user) {
         log.info("Создаем пользователя: {}", user);
-        return userClient.userItem(user);
+        return userClient.createUser(user);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> userPartItem(@RequestBody UserItemRequestDto user, @PathVariable Long id) {
+    public ResponseEntity<Object> updateUser(@RequestBody UserItemRequestDto user, @PathVariable Long id) {
         log.info("Изменяем пользователя: {}", user);
-        return userClient.userPatchItem(id, user);
+        return userClient.updateUser(id, user);
     }
 
     @GetMapping("/{id}")

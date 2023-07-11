@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import static ru.practicum.shareit.constants.Constants.DATE_FORMAT;
 
 
 @Slf4j
@@ -20,7 +21,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleInvalidRequestException(final RuntimeException ex) {
         Map<String, Object> response = new LinkedHashMap<>();
 
-        response.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        response.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
         response.put("status", HttpStatus.BAD_REQUEST.name());
         response.put("error", ex.getMessage());
 

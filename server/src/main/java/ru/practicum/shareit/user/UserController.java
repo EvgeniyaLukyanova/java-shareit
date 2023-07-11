@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody UserDto user) {
+    public UserDto createUser(@RequestBody UserDto user) {
         log.info("Начинаем добавлять пользователя: {}", user);
         UserDto userDto = userService.createUser(user);
         log.info("Пользователь добавлен: {}", user);
@@ -30,16 +30,16 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto patch(@RequestBody UserDto user, @PathVariable Long id) {
+    public UserDto updateUser(@RequestBody UserDto user, @PathVariable Long id) {
         log.info("Начинаем изменять пользователя: {}", user);
-        UserDto userDto = userService.partialUpdate(user, id);
+        UserDto userDto = userService.updateUser(user, id);
         log.info("Пользователь изменен: {}", user);
         return userDto;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<UserDto> findAll() {
+    public Collection<UserDto> getUsers() {
         log.info("Получение списка всех пользователей");
         return userService.getUsers();
     }

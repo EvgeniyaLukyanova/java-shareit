@@ -66,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto partialUpdate(ItemDto itemDto, Long id, Long userId) {
+    public ItemDto updateItem(ItemDto itemDto, Long id, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользовать с ид %s не найден", userId)));
         Item item = repository.findById(id)

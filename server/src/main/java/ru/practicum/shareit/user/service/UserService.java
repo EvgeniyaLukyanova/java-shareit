@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     UserDto createUser(UserDto user);
 
-    UserDto partialUpdate(UserDto userDto, Long id);
+    UserDto updateUser(UserDto userDto, Long id);
 
     UserDto getUserById(long id);
 

@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto partialUpdate(UserDto userDto, Long id) {
+    public UserDto updateUser(UserDto userDto, Long id) {
         Optional<User> userOptional = repository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();

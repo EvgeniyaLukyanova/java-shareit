@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.dto.UserDto;
 import java.time.LocalDateTime;
 
-import static ru.practicum.shareit.constants.Constants.dateFormat;
+import static ru.practicum.shareit.constants.Constants.DATE_FORMAT;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +16,6 @@ public class RequestDto {
     private Long id;
     private String description;
     private UserDto requestor;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = dateFormat)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
     private LocalDateTime created;
 }

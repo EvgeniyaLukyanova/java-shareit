@@ -31,8 +31,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.practicum.shareit.constants.Constants.dateFormat;
-import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
+import static ru.practicum.shareit.constants.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookingControllerTest {
@@ -86,15 +85,15 @@ class BookingControllerTest {
                 BookingStatus.APPROVED);
 
         mvc.perform(post("/bookings")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
-                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
+                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
                 .andExpect(jsonPath("$.item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.item.description", is(itemDto.getDescription())))
@@ -109,12 +108,12 @@ class BookingControllerTest {
         when(bookingService.requestApprovReject(any(), any(), any())).thenReturn(bookingDtoResponse);
 
         mvc.perform(patch("/bookings/1")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .param("approved", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
-                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
+                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
                 .andExpect(jsonPath("$.item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.item.description", is(itemDto.getDescription())))
@@ -128,11 +127,11 @@ class BookingControllerTest {
         when(bookingService.getBookingById(any(), any())).thenReturn(bookingDtoResponse);
 
         mvc.perform(get("/bookings/1")
-                        .header(requestHeaderForUser, userDto.getId()))
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
-                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$.start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
+                .andExpect(jsonPath("$.end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
                 .andExpect(jsonPath("$.item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.item.description", is(itemDto.getDescription())))
@@ -146,15 +145,15 @@ class BookingControllerTest {
         when(bookingService.getBookings(any(), any(), any(), any())).thenReturn(List.of(bookingDtoResponse));
 
         mvc.perform(get("/bookings")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .param("state", "APPROVED")
                         .param("from", "0")
                         .param("size", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
-                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
+                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
                 .andExpect(jsonPath("$[0].item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].item.description", is(itemDto.getDescription())))
@@ -168,15 +167,15 @@ class BookingControllerTest {
         when(bookingService.getBookingsOwner(any(), any(), any(), any())).thenReturn(List.of(bookingDtoResponse));
 
         mvc.perform(get("/bookings/owner")
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .param("state", "APPROVED")
                         .param("from", "0")
                         .param("size", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(bookingDtoResponse.getId()), Long.class))
-                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(dateFormat)))))
-                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(dateFormat)))))
+                .andExpect(jsonPath("$[0].start", is(bookingDtoResponse.getStart().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
+                .andExpect(jsonPath("$[0].end", is(bookingDtoResponse.getEnd().format(DateTimeFormatter.ofPattern(DATE_FORMAT)))))
                 .andExpect(jsonPath("$[0].item.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$[0].item.description", is(itemDto.getDescription())))
@@ -190,7 +189,7 @@ class BookingControllerTest {
         when(bookingService.getBookings(any(), any(), any(), any())).thenThrow(new InvalidDataException(String.format("Unknown state: APPROV")));
 
         mvc.perform(get("/bookings", 0, 1)
-                        .header(requestHeaderForUser, userDto.getId())
+                        .header(REQUEST_HEADER_FOR_USER, userDto.getId())
                         .param("state", "APPROV")
                         .param("from", "0")
                         .param("size", "1"))

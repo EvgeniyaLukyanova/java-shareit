@@ -72,7 +72,7 @@ class UserControllerTest {
         UserDto newUserDto = userDto;
         newUserDto.setName("update");
 
-        when(userService.partialUpdate(any(), any())).thenReturn(newUserDto);
+        when(userService.updateUser(any(), any())).thenReturn(newUserDto);
 
         mvc.perform(patch("/users/1")
                         .content(mapper.writeValueAsString(updateUserDto))

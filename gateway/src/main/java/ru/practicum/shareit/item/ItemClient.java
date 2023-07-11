@@ -27,11 +27,11 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> itemItem(long userId, ItemRequestDto requestDto) {
+    public ResponseEntity<Object> createItem(long userId, ItemRequestDto requestDto) {
         return post("", userId, requestDto);
     }
 
-    public ResponseEntity<Object> itemPatchItem(long userId, long itemId, ItemRequestDto requestDto) {
+    public ResponseEntity<Object> updateItem(long userId, long itemId, ItemRequestDto requestDto) {
         return patch("/" + itemId, userId, requestDto);
     }
 

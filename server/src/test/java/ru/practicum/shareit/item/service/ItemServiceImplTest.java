@@ -120,7 +120,7 @@ class ItemServiceImplTest {
         updateItemDto.setDescription("update Аккумуляторная дрель + аккумулятор");
         updateItemDto.setAvailable(false);
 
-        ItemDto resultItemDto = itemService.partialUpdate(updateItemDto, itemId, userId);
+        ItemDto resultItemDto = itemService.updateItem(updateItemDto, itemId, userId);
 
         assertEquals(userId, resultItemDto.getId());
         assertEquals("update Аккумуляторная дрель", resultItemDto.getName());

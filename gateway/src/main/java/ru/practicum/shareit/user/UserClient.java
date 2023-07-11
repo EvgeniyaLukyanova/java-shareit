@@ -28,11 +28,11 @@ public class UserClient extends BaseClient {
         return get("");
     }
 
-    public ResponseEntity<Object> userItem(UserItemRequestDto requestDto) {
+    public ResponseEntity<Object> createUser(UserItemRequestDto requestDto) {
         return post("", requestDto);
     }
 
-    public ResponseEntity<Object> userPatchItem(long userId, UserItemRequestDto requestDto) {
+    public ResponseEntity<Object> updateUser(long userId, UserItemRequestDto requestDto) {
         return patch("/" + userId, requestDto);
     }
 
