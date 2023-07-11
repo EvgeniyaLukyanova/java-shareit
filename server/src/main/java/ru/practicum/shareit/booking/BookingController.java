@@ -11,7 +11,7 @@ import ru.practicum.shareit.exception.InvalidDataException;
 import java.util.Collection;
 import java.util.Map;
 
-import static ru.practicum.shareit.constants.Constants.requestHeaderForUser;
+import static ru.practicum.shareit.constants.Constants.REQUEST_HEADER_FOR_USER;
 
 @RestController
 @RequestMapping("/bookings")
@@ -26,8 +26,8 @@ public class BookingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookingDtoResponse create(@RequestBody BookingDto booking,
-                                     @RequestHeader(requestHeaderForUser) Long userId) {
+    public BookingDtoResponse createBooking(@RequestBody BookingDto booking,
+                                            @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Начало бронирования: {}", booking);
         BookingDtoResponse bookingDto = bookingService.createBooking(booking, userId);
         log.info("Бронирование окончено: {}", bookingDto);
@@ -36,9 +36,9 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
-    public BookingDtoResponse patch(@PathVariable("bookingId") Long id,
-                                    @RequestParam("approved") Boolean approved,
-                                    @RequestHeader(requestHeaderForUser) Long userId) {
+    public BookingDtoResponse requestApprovReject(@PathVariable("bookingId") Long id,
+                                                  @RequestParam("approved") Boolean approved,
+                                                  @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Начало подтверждение/отклонение запроса на бронирование");
         BookingDtoResponse bookingDto = bookingService.requestApprovReject(id, userId, approved);
         log.info("Бронирование подтверждено/отклонено");
@@ -48,14 +48,14 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     @ResponseStatus(HttpStatus.OK)
     public BookingDtoResponse getBookingById(@PathVariable("bookingId") Long id,
-                                             @RequestHeader(requestHeaderForUser) Long userId) {
+                                             @RequestHeader(REQUEST_HEADER_FOR_USER) Long userId) {
         log.info("Получение информации о бронировании с ид {}", id);
         return bookingService.getBookingById(id, userId);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<BookingDtoResponse> getBookings(@RequestHeader(requestHeaderForUser) Long userId,
+    public Collection<BookingDtoResponse> getBookings(@RequestHeader(REQUEST_HEADER_FOR_USER) Long userId,
                                                       @RequestParam(required = false) String state,
                                                       @RequestParam(required = false) Integer from,
                                                       @RequestParam(required = false) Integer size) {
@@ -65,7 +65,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
-    public Collection<BookingDtoResponse> getBookingsOwner(@RequestHeader(requestHeaderForUser) Long userId,
+    public Collection<BookingDtoResponse> getBookingsOwner(@RequestHeader(REQUEST_HEADER_FOR_USER) Long userId,
                                                            @RequestParam(required = false) String state,
                                                            @RequestParam(required = false) Integer from,
                                                            @RequestParam(required = false) Integer size) {
