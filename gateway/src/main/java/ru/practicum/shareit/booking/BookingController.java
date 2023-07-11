@@ -21,7 +21,7 @@ import static ru.practicum.shareit.constants.Constants.REQUEST_HEADER_FOR_USER;
 @RequiredArgsConstructor
 @Slf4j
 @Validated
-public class BookingController_ {
+public class BookingController {
     private final BookingClient bookingClient;
 
     @PostMapping
